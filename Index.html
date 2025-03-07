@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Base</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6200ea;
+            --secondary: #3700b3;
+            --light: #e8eaf6;
+            --dark: #212121;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--light);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .search-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .search-box:hover {
+            transform: translateY(-5px);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .search-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            width: 100%;
+        }
+
+        .search-btn:hover {
+            background: var(--secondary);
+        }
+
+        .answer-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            min-height: 200px;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .search-input {
+                font-size: 1rem;
+            }
+        }
+
+        .answer-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .answer-title {
+            color: var(--light);
+            margin-bottom: 1rem;
+        }
+
+        .answer-text {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+
+        .error-message {
+            color: #ff6b6b;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Knowledge Base</h1>
+            <p>Find answers to all your questions</p>
+        </header>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" class="search-input" placeholder="Ask your question...">
+            <button class="search-btn" onclick="searchQuestion()">Search</button>
+        </div>
+
+        <div class="answer-section">
+            <div class="error-message" id="errorMessage">No results found. Please try rephrasing your question.</div>
+            <div class="answer-content" id="answerContent">
+                <h2 class="answer-title" id="answerTitle"></h2>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const knowledgeBase = [
+            {
+                question: "how to learn programming",
+                title: "Learning Programming Guide",
+                content: "1. Start with basics: Learn fundamental concepts like variables, loops, and conditionals.\n2. Choose a language: Python is great for beginners.\n3. Practice regularly: Use platforms like LeetCode or Codecademy.\n4. Build projects: Start with simple apps and gradually increase complexity.\n5. Join communities: Engage with other learners on Stack Overflow or GitHub."
+            },
+            {
+                question: "best productivity tips",
+                title: "Top Productivity Hacks",
+                content: "• Use the Pomodoro Technique (25 mins work + 5 mins break)\n• Prioritize tasks with Eisenhower Matrix\n• Eliminate distractions using website blockers\n• Use task management tools like Trello or Notion\n• Maintain a consistent morning routine"
+            },
+            {
+                question: "healthy eating habits",
+                title: "Healthy Eating Guide",
+                content: "1. Eat balanced meals with proteins, carbs, and healthy fats\n2. Stay hydrated - drink at least 2 liters of water daily\n3. Include plenty of fruits and vegetables\n4. Avoid processed foods and excessive sugar\n5. Practice portion control and mindful eating"
+            }
+        ];
+
+        function searchQuestion() {
+            const input = document.getElementById('searchInput').value.toLowerCase().trim();
+            const answerContent = document.getElementById('answerContent');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Clear previous results
+            answerContent.style.display = 'none';
+            errorMessage.style.display = 'none';
+
+            if (!input) {
+                alert('Please enter a question');
+                return;
+            }
+
+            // Improved search logic
+            const results = knowledgeBase.filter(item => 
+                item.question.includes(input) || 
+                item.title.toLowerCase().includes(input)
+            );
+
+            if (results.length > 0) {
+                const bestMatch = results[0];
+                document.getElementById('answerTitle').textContent = bestMatch.title;
+                
+                // Preserve line breaks
+                const answerText = document.getElementById('answerText');
+                answerText.innerHTML = bestMatch.content.replace(/\n/g, '<br>');
+                
+                answerContent.style.display = 'block';
+            } else {
+                errorMessage.style.display = 'block';
+            }
+        }
+
+        // Enter key support
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchQuestion();
+            }
+        });
+    </script>
+</body>
+</html>
